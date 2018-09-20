@@ -1,0 +1,186 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Hello World App
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /hello:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: users
+    get:
+      description: Returns 'Hello' to the caller
+      # used as the method name of the controller
+      operationId: hello
+      parameters:
+        - name: name
+          in: query
+          description: The name of the person to whom to say hello
+          required: false
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/SuccessResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /users/{id}:
+    x-swagger-router-controller: users
+    get:
+      description: gets a User with passed id
+      # used as the method name of the controller
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          description: Passed User ID
+          required: true
+          type: number
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/UserDetails"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+    patch:
+      description: updates user details with specified Id        
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          description: Id of user
+          type: number
+          required: true
+      responses: 
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/UserDetails"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: deletes user with specified Id        
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: Id of user
+          type: number
+          required: true
+      responses: 
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /users:
+    x-swagger-router-controller: users
+    post:
+      summary: adds a new user
+      # used as the method name of the controller
+      operationId: addUser
+      parameters:
+        - name: userDetails
+          description: user details
+          in: body
+          schema:
+            type: object
+            required:
+              - id
+              - username
+            properties:
+              id:
+                type: number
+                description: Users Id Number
+              username:
+                type: string
+                description: Users username
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/UserDetails"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"     
+          
+    get:
+      summary: get All users 
+      # used as the method name of the controller
+      operationId: getAllUsers
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/UserDetails'
+              
+            # a pointer to a definition
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"          
+
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  SuccessResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+
+  #user details definitions
+  UserDetails:
+    required:
+      - id
+      - username
+    properties:
+      id:
+        type: integer
+      username:
+        type: string
+  
+

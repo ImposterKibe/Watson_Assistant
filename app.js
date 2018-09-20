@@ -1,23 +1,50 @@
 'use strict';
+// Audio
 
 // Load Environment Variable
 require('dotenv').config()
 
 //Watson Assistant dependencies
+//Swagger server dependencies
+var SwaggerExpress = require('swagger-express-mw');
+var app = require('express')();
+module.exports = app; // for testing
+
+var config = {
+  appRoot: __dirname // required config
+};
+
 const prompt = require('prompt')
 const AssistantV1 = require('watson-developer-cloud/assistant/v1')
+const ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3')
+// const speechToTextV1 = require('watson-developer-cloud/text-to-speech/v1')
+const language_translatorV3 = require('watson-developer-cloud/language-translator/v3')
+const workspace_id = process.env.WORKSPACE_ID; // replace with workspace ID
+
+// Set up Speech-to-Text service wrapper
+/*
+const speechToText= new speechToTextV1({
+  username: process.env.SPEECH_USERNAME ,
+  password: process.env.SPEECH_PASSWORD,
+  url:process.env.SPEECH_URL
+})
+*/
+//Set Up Translator service
+const language_translator= new language_translatorV3({
+  username: process.env.TRANSLATOR_USERNAME ,
+  password: process.env.TRANSLATOR_PASSWORD,
+  url:process.env.TRANSLATOR_URL,
+  version: '2018-09-20'
+})
 
 // Set up Assistant service wrapper.
-const service = new AssistantV1({
+const assistant = new AssistantV1({
   username: process.env.ASSISTANT_USERNAME, // replace with service username
   password: process.env.ASSISTANT_PASSWORD, // replace with service password
   version: '2018-09-18'
 });
 
-const workspace_id = process.env.WORKSPACE_ID; // replace with workspace ID
-
-//Watson Tone Analyzer
-const ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3')
+//Watson Tone Analyzer Service wrapper
 const tone_analyzer= new ToneAnalyzerV3({
   username: process.env.TONE_USERNAME, // replace with service username
   password: process.env.TONE_PASSWORD, // replace with service password
@@ -26,13 +53,20 @@ const tone_analyzer= new ToneAnalyzerV3({
   url: process.env.TONE_URL
 })
 
-const my_text='Hi, partner'
 
+const my_text= 'Hi, partner'
+
+//Parameters
 const toneParams= {
   'tone_input':{'text':my_text},
   'content_type':'application/json'
 }
+const translatorParams= {
+  text: 'Hello',
+  model_id: 'en-es'
+}
 
+//Tone Analyser instance
 tone_analyzer.tone(toneParams,(err,result)=>{
   if(err){
     return console.log(err)
@@ -45,15 +79,13 @@ tone_analyzer.tone(toneParams,(err,result)=>{
     })
   })
 })
-
-//Swagger server dependencies
-var SwaggerExpress = require('swagger-express-mw');
-var app = require('express')();
-module.exports = app; // for testing
-
-var config = {
-  appRoot: __dirname // required config
-};
+//Translator instance
+language_translator.translate(translatorParams,(err,result)=>{
+  if(err){
+  return  console.log(err)
+  }
+  console.log(result)
+})
 
 SwaggerExpress.create(config, function(err, swaggerExpress) {
   if (err) { throw err; }
@@ -70,7 +102,7 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
 });
 
 // Start conversation with empty message.
-service.message({
+assistant.message({
   workspace_id: workspace_id
 }, processResponse);
 
@@ -95,7 +127,7 @@ function processResponse (err, response) {
 
   prompt.start()
   const newMessageFromUser = prompt.get('user_input', (err,result)=>{
-    service.message({
+    assistant.message({
       workspace_id: workspace_id,
       context : response.context,
       input: { text: result.user_input }

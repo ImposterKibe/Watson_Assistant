@@ -1,9 +1,13 @@
 'use strict';
 
+// Load Environment Variable
+require('dotenv').config()
+
+//Watson Assistant dependencies
 const prompt = require('prompt')
 const AssistantV1 = require('watson-developer-cloud/assistant/v1')
 
-
+//Swagger server dependencies
 var SwaggerExpress = require('swagger-express-mw');
 var app = require('express')();
 module.exports = app; // for testing
@@ -29,12 +33,12 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
 
 // Set up Assistant service wrapper.
 const service = new AssistantV1({
-  username: '3a48d38a-8e14-44d6-94c9-40914d026b59', // replace with service username
-  password: '27X8NaUUktNX', // replace with service password
+  username: process.env.ASSISTANT_USERNAME, // replace with service username
+  password: process.env.ASSISTANT_PASSWORD, // replace with service password
   version: '2018-09-18'
 });
 
-const workspace_id = 'bb207c13-f34d-4b47-a8c9-f4b1c2b5fd23'; // replace with workspace ID
+const workspace_id = process.env.WORKSPACE_ID; // replace with workspace ID
 
 // Start conversation with empty message.
 service.message({

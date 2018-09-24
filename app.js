@@ -29,6 +29,7 @@ const speechToText= new speechToTextV1({
   url:process.env.SPEECH_URL
 })
 */
+
 //Set Up Translator service
 const language_translator= new language_translatorV3({
   username: process.env.TRANSLATOR_USERNAME ,
@@ -65,7 +66,7 @@ const translatorParams= {
   text: 'Hello',
   model_id: 'en-es'
 }
-
+/*
 //Tone Analyser instance
 tone_analyzer.tone(toneParams,(err,result)=>{
   if(err){
@@ -86,7 +87,9 @@ language_translator.translate(translatorParams,(err,result)=>{
   }
   console.log(result)
 })
+*/
 
+//Server
 SwaggerExpress.create(config, function(err, swaggerExpress) {
   if (err) { throw err; }
 
@@ -102,10 +105,10 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
 });
 
 // Start conversation with empty message.
-assistant.message({
+/*assistant.message({
   workspace_id: workspace_id
 }, processResponse);
-
+*/
 // Process the service response.
 function processResponse (err, response) {
   if (err) {
@@ -124,7 +127,6 @@ function processResponse (err, response) {
   }
 
   // Prompt for the next round of input.
-
   prompt.start()
   const newMessageFromUser = prompt.get('user_input', (err,result)=>{
     assistant.message({
@@ -132,6 +134,5 @@ function processResponse (err, response) {
       context : response.context,
       input: { text: result.user_input }
       }, processResponse)
-
   })
 }

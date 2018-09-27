@@ -21,13 +21,14 @@ const ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3')
 const language_translatorV3 = require('watson-developer-cloud/language-translator/v3')
 const NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1')
 
+
 const watson_lang_analyzer = new NaturalLanguageUnderstandingV1({
-  version: '2018-05-19',
+  version: '2018-03-16',
   username: process.env.LANGUAGE_UNDERSTANDER_USERNAME,
   password: process.env.LANGUAGE_UNDERSTANDER_PASSWORD,
   url:process.env.LANGUAGE_UNDERSTANDER_URL
 })
-
+/*
 var lang_parameters = {
   'text': 'IBM is an American multinational technology company headquartered in Armonk, New York, United States, with operations in over 170 countries.',
   'features': {
@@ -46,8 +47,9 @@ var lang_parameters = {
 watson_lang_analyzer.analyze(lang_parameters, langData)
 
 function langData (err,result){
-  console.log(result)
+  console.log(result.entities)
 }
+*/
 const workspace_id = process.env.WORKSPACE_ID; // replace with workspace ID
 
 // Set up Speech-to-Text service wrapper
@@ -81,36 +83,62 @@ const twit = new Tweet({
 
 //tweet Search Parameters
 const tweetParams ={
-  q:'Eminem',
-  count: 1
+  q:'Safaricom airtel',
+  count: 20
+}
+const tweet_array= []
+const toneParams= {
+  utterances:tweet_array
 }
 
-//twit.get('search/tweets',tweetParams,gotData)
-
-function gotData (err,data,response)      {
+twit.get('search/tweets',tweetParams,(err,data)=>{
+  if(err){
+    return console.log(err)
+  }
   const tweets = data.statuses
   for (let i = 0; i<tweets.length;i++){
-    const my_text= tweets[i].text
-    console.log(tweets[i].text)
-    const toneParams= {
-      'tone_input':{'text':my_text},
-      'content_type':'application/json'
+    const new_tweet={
+      text: tweets[i].text,
+      user: tweets[i].user.name
     }
+    tweet_array.push(new_tweet)
+  }
+   // console.log(tweets[i].text)
+   let negative_sum = 0
+   let positive_sum = 0
+   let neutral_count= 0
     //Tone Analyser instance
-    tone_analyzer.tone(toneParams,(err,result)=>{
+    tone_analyzer.toneChat(toneParams,(err,result)=>{
+
       if(err){
         return console.log(err)
       }
-    const cats = result.document_tone.tone_categories;
+   	const negatives=['frustrated','sad','impolite']
+    const positives = ['satisfied','polite','excited','sympathetic']
+    
+    const cats = result.utterances_tone
+
     cats.forEach((cat)=>{
-      console.log('\n'+cat.category_name)
+      //console.log('\n'+cat.utterance_text)
       cat.tones.forEach((tone)=>{
-        console.log("%s: %s",tone.tone_name, tone.score)
+        //console.log('%s:%s',tone.tone_name,tone.score+'...tone')
+          if( negatives.includes(tone.tone_id)){
+          negative_sum += tone.score
+          //console.log('Negative sum:'+ negative_sum)
+          }else if( positives.includes(tone.tone_id)){
+          positive_sum += tone.score
+          //console.log('Positive sum:'+ positive_sum)
+        }else{
+          neutral_count++
+        }
       })
     })
+
+    console.log("Positive_score: %s",positive_sum/tweets.length)
+    console.log("Negative_score: %s",negative_sum/tweets.length,'\nNeutral Count:'+neutral_count)
   })
-  }
-}
+
+})
 
 //Set Up Translator service
 const language_translator= new language_translatorV3({
@@ -139,7 +167,6 @@ const assistant = new AssistantV1({
 });
 
 
-
 //Server
 SwaggerExpress.create(config, function(err, swaggerExpress) {
   if (err) { throw err; }
@@ -160,7 +187,7 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
   workspace_id: workspace_id
 }, processResponse);
 */
-// Process the service response.
+// Process the Watson service response.
 function processResponse (err, response) {
   if (err) {
     console.error(err); // something went wrong

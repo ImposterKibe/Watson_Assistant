@@ -153,7 +153,7 @@ paths:
         default:
           description: Error
           schema:
-            $ref: "#/definitions/ErrorResponse"    
+            $ref: "#/definitions/ErrorResponse"          
   /watson:
     x-swagger-router-controller: assistant_controller
     get:
@@ -171,7 +171,31 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"     
-
+          
+  /tone:
+    x-swagger-router-controller: tone_controller
+    post:
+      summary: analyses text using watson tone analyser
+      # used as the method name of the controller
+      operationId: getTone
+      parameters:
+        - name: text
+          description: user text
+          in: body
+          schema:
+            type: string
+    
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/SuccessResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"     
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions

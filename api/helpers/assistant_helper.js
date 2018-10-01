@@ -1,9 +1,9 @@
-const assistant_controller = require('../controllers/credentials_controller')
+const assistant_service = require('../../config/credentials')
 const prompt= require('prompt')
 // Start conversation with empty message.
-const startConvo = ()=>{
-    assistant_controller.watson_assistant.message({
-        workspace_id: assistant_controller.workspace_id
+const startConvo = async () =>{
+    const conv = await assistant_service.watson_assistant.message({
+        workspace_id: assistant_service.workspace_id
     }, processResponse);
 }
 
@@ -28,7 +28,7 @@ const startConvo = ()=>{
     prompt.start()
     const newMessageFromUser = prompt.get('user_input', (err,result)=>{
       assistant_controller.watson_assistant.message({
-        workspace_id: assistant_controller.workspace_id,
+        workspace_id: assistant_service.workspace_id,
         context : response.context,
         input: { text: result.user_input }
         }, processResponse)

@@ -153,7 +153,24 @@ paths:
         default:
           description: Error
           schema:
-            $ref: "#/definitions/ErrorResponse"          
+            $ref: "#/definitions/ErrorResponse"    
+  /watson:
+    x-swagger-router-controller: assistant_controller
+    get:
+      description: begins chat with Watson assistant
+      # used as the method name of the controller
+      operationId: startChat
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/SuccessResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"     
 
   /swagger:
     x-swagger-pipe: swagger_raw

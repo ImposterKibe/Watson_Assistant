@@ -1,6 +1,6 @@
 'use strict';
 const User = require('../models/user');
-const userController = require('../controllers/users');
+const userController = require('../controllers/users_controller');
 
 //const addedUser = await userController.addUser();
 const createUser = async (id,username) =>{ 

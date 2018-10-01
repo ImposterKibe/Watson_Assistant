@@ -1,6 +1,5 @@
 'use strict';
 const util = require('util');
-const User = require('../models/user');
 const user= require('../helpers/users_helper')
 
 const addUser = (req, res) => {

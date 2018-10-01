@@ -14,6 +14,8 @@
         url:process.env.SPEECH_URL
     })
 
+    
+
     //Set Up Translator service
     const language_translator= new language_translatorV3({
         username: process.env.TRANSLATOR_USERNAME ,

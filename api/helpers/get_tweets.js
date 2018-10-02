@@ -1,12 +1,7 @@
 const {twit} = require('../../config/credentials')
 
 //Parameters
-const tweetParams ={
-    q:'Safaricom airtel',
-    count: 10
-  }
-
-const getTweets=()=> {
+const getTweets=(tweetParams)=> {
 twit.get('search/tweets',tweetParams,(err,data)=>{
   let tweet_array = []
     if(err){

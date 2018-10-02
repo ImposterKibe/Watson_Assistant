@@ -1,14 +1,15 @@
-const {tone_analyzer} = require('../../config/credentials')
+const {tone_analyzer,twit} = require('../../config/credentials')
 const tweets = require('../helpers/get_tweets')
+const tweet_handler = require('../helpers/get_tweets')
 
 
-let tweet_array = tweets.getTweets
-
-const toneParams= {
-   utterances:tweet_array
-}
+const tweet_array = tweets.getTweets
+const utterances= tweet_handler.getTweets
 
 const get_chat_tone =()=>{
+    const toneParams={
+        utterances:utterances
+    }
  tone_analyzer.toneChat(toneParams,(err,result)=>{
     if(err){
       return console.log(err)
@@ -39,14 +40,16 @@ const get_chat_tone =()=>{
 })
 }
 
-const get_text_tone = (obj) => {
-    let response
-    tone_analyzer.tone(obj, (err,data) => {
+const get_text_tone = async (obj) => {
+    const tone_array = []
+    const response =await tone_analyzer.tone(obj, (err,data) => {       
         if(err){
             console.log(err)
         }
         const cats = data.document_tone.tone_categories
-        response = cats.map(cat=>{
+        
+        //console.log(cats+'------cats')
+        cats.map(cat=>{
             let catValues = {
                 "categoryName": cat.category_name,
                 "categories" : []
@@ -59,22 +62,23 @@ const get_text_tone = (obj) => {
                }
              catValues.categories.push(toneObj)
             })
-    
-            return catValues
-        })/*
-        const cats = data.document_tone.tone_categories
-        cats.map(cat=>{
-            console.log(cat.category_name)
-            cat.tones.map(tone=>{
-                console.log('%s:%s',tone.tone_name,tone.score)
-            })
-        })
-        */
-    })
-    console.log(response)
-    return response
-}
 
+            tone_array.push(catValues)
+            
+        })
+    })
+    return tones
+}
+const getTweets = async (obj)=>{
+    const tweet_array=[]
+    const result = await twit.get('search/tweets',obj,gotData=>{
+        const tweets = data.statuses
+        tweets.map(tweet=>{
+            tweet_array.push(tweet.text)
+        })
+    })
+    return tweet_array
+}
 // const analyzer=()=>{
 //     var lang_parameters = {
 //       'text': tweet_array[i],
@@ -100,5 +104,6 @@ const get_text_tone = (obj) => {
 
 module.exports= {
     get_chat_tone,
-    get_text_tone
+    get_text_tone,
+    getTweets
 }

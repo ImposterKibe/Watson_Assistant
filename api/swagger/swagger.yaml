@@ -223,5 +223,5 @@ definitions:
         type: integer
       username:
         type: string
-  
+
 

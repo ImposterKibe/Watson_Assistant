@@ -1,6 +1,7 @@
 const util = require('util')
 const tone_helper = require('../helpers/tone_helper')
 const tweet_handler = require('../helpers/get_tweets')
+const response_handler = require('../helpers/response_handler')
 
 const getTone=  (req,res,err)=>{
     if(err){
@@ -14,7 +15,7 @@ const getTone=  (req,res,err)=>{
     }
     const result = tone_helper.get_text_tone(toneParams)
     console.log(result)
-    const message = util.format('tone found')
+    //const message = response_handler.pick_data(result)
     res.status(200).send({message})
 }
 const getTweets = (req,res)=>{

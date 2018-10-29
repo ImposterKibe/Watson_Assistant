@@ -27,7 +27,7 @@ const startConvo = async () =>{
     // Prompt for the next round of input.
     prompt.start()
     const newMessageFromUser = prompt.get('user_input', (err,result)=>{
-      assistant_controller.watson_assistant.message({
+      assistant_service.watson_assistant.message({
         workspace_id: assistant_service.workspace_id,
         context : response.context,
         input: { text: result.user_input }

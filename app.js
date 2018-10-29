@@ -1,6 +1,10 @@
+require('dotenv').config()
 'use strict'
 const SwaggerExpress = require('swagger-express-mw');//Import Swagger server dependences
 const app = require('express')();
+const messenger = require('././api/helpers/africa_talking')
+
+
 
 
 module.exports = app; // for testing
@@ -19,7 +23,8 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
   app.listen(port);
 
   if (swaggerExpress.runner.swagger.paths['/hello']) {
-    console.log('Server Running.....');
+    console.log('Server Running.....port:10010');
   }
 });
 
+messenger.sendMessage

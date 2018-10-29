@@ -8,6 +8,7 @@
   "license": "",
   "main": "app.js",
   "dependencies": {
+    "africastalking": "^0.3.2",
     "axios": "^0.18.0",
     "botkit": "^0.6.16",
     "dotenv": "^6.0.0",
@@ -15,6 +16,7 @@
     "lazy": "^1.0.11",
     "mysql": "^2.16.0",
     "mysql2": "^1.6.1",
+    "ngrok": "^3.1.0",
     "prompt": "^1.0.0",
     "prompt-sync": "^4.1.6",
     "querystrings": "^0.4.0",

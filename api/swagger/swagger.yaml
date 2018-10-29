@@ -18,6 +18,24 @@ consumes:
 produces:
   - application/json
 paths:
+  /messages:
+    x-swagger-router-controller: africa_talking
+    post:
+      description: Handles Messaging service
+      operationId: recieve_message
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/SuccessResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        
+      
   /hello:
     # binds a127 app logic to a route
     x-swagger-router-controller: users
